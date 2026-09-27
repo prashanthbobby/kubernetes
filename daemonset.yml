@@ -1,0 +1,57 @@
+# it makesure that all or some nodes run a copy of a pod. means every node will have a copy.
+# By default we cannot add a pod in master node. so we need to add toloration in the specs to place a pod in master node.
+# we cannot add replicas in daemon set as we did in RC and RS. as it will place one pod in every node.
+
+# to write a daemon set we need kind daemonset
+# we need to select the selector so that the pod will gets created in the daemonset.
+# Here the selector and the pod labels should match.
+# we need a pod so give pod template
+# we need a container so give container details
+# we need to mention tolerations if we wants to deploy the container in the master/control-plane aswell.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mouprads
+  namespace: pns
+  labels:
+    app: moupra
+spec:
+  selector:
+    matchLabels:
+      name: moupra
+  template: #template of the pod
+    metadata:
+      labels:
+        name: moupra
+    spec:
+      tolerations:
+      # these tolerations are to have the daemonset runnable on control plane nodes(Master node)
+      # remove them if your control plane nodes should not run pods
+      # by describing the control plane node we can see the Key, Operator, and effect we need to provide.
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers: # template of the container
+      - name: moupra1c
+        image: prashanth1316/moupra:1
+        resources: # use to se the CPU and memory for the pod.
+          limits: # max CPU and memory we need for our pod.
+            memory: 200Mi
+          requests: # min CPU and memory we need for our pod.
+            cpu: 100m
+            memory: 200Mi
+    #   volumeMounts:
+    #   - name: varlog
+    #     mountPath: /var/log
+    #   # it may be desirable to set a high priority class to ensure that a DaemonSet Pod
+    #   # preempts running Pods
+    #  priorityClassName: important
+    # terminationGracePeriodSeconds: 30
+    # volumes:
+    # - name: varlog
+    #   hostPath:
+    #     path: /var/log

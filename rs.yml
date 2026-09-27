@@ -1,0 +1,26 @@
+# it is advanced cocept of ReplicationController. used to maintain no of replicas of the pods. and used for pod lifecycle.
+# if any pod gets terminated in any case it will adjust as per the replicas we mentioned.
+# the only difference is in selectors we use matchlabels.
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mouprars
+  namespace: pns
+  #labels: #not mandatory
+   # app: moupra
+spec: #specifications for RC
+  replicas: 2
+  selector: #selectors should be equality or set(expression)based selectors. #this will be the label of the pods which used select which pods we need to place under this.
+    matchLabels:
+      app: moupra
+  template: #template of your pod
+    metadata:
+      name: mpupra
+      labels:
+        app: moupra
+    spec: #specification of your pod
+      containers:
+      - name: moupra1c
+        image: prashanth1316/moupra:1
+        ports:
+        - containerPort: 80

@@ -1,0 +1,118 @@
+# So we will use the Config map key values to refer it in the template as env variables.
+# this is the best practice to maintain the secrets instead of hardcoding it in the main template.
+# the drawback is, when you describe the pod you can see the values. so to encode the values we have other option SECRET.
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: moupra
+  namespace: pns
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: moupra
+
+  template:
+    metadata:
+      labels:
+        app: moupra
+
+    spec:
+      containers:
+        - name: moupra1c
+          image: prashanth1316/moupra:1
+
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          ports:
+            - containerPort: 80
+
+          env:
+            - name: MONGO_DB_HOSTNAME
+              value: dbsvc
+
+            - name: MONGO_DB_USERNAME
+              valuefrom:
+              ConfigMapKeyRef:
+                name: pcm # name of the config map.
+                key: dbusername # key name 
+
+            - name: MONGO_DB_PASSWORD
+              valuefrom:
+              ConfigMapKeyRef:
+                name: pcm # name of the config map.
+                key: dbpassword # key name 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moupra-app-svc
+  namespace: pns
+
+spec:
+  type: NodePort
+  selector:
+    app: moupra-app
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+
+metadata:
+  name: mongodb
+  namespace: pns
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+
+  template:
+    name: dbapp
+    metadata:
+      labels:
+        app: mongo
+
+    spec:
+      containers:
+        - name: mongodb-container
+          image: mongo
+          ports:
+            - containerPort: 27017
+
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: devdb
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: devdb@123x
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: dbsvc
+  namespace: pns
+
+spec:
+  type: ClusterIP
+  selector:
+    app: mongo
+
+  ports:
+    - port: 27017
+      targetPort: 27017

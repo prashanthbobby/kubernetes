@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: moupra
+  namespace: pns
+  labels:
+    app: moupra
+spec:
+  containers:
+    - name: moupracontainer
+      image: prashanth1316/moupra:1
+      ports:
+      - containerPort: 80
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      #command: ["/bin/sh"]
+      #args: ["-c", "touch /tmp/healthy && sleep 3600"]
+      livenessProbe: # this will check if the pod is unavailable due to any of the reasons like memory, cou deadlock etc.
+        tcpSocket:
+          port: 80
+        initialDelaySeconds: 60 # after how many seconds this health check should run. min 5 sec
+        periodSeconds: 5 # how frequent this health check needs to run.
+        timeoutSeconds: 5
+        failureThreshold: 3
+      readinessProbe: # this will check if the pod is unavailable due to any of the reasons like memory, cou deadlock etc.
+        tcpSocket:
+          port: 80
+        initialDelaySeconds: 60 # after how many seconds this health check should run. min 5 sec
+        periodSeconds: 5 # how frequent this health check needs to run.
+        timeoutSeconds: 5 # This is the maximum time Kubernetes waits for the probe to respond.
+        failureThreshold: 3 # This is how many consecutive failures are allowed before Kubernetes takes action.

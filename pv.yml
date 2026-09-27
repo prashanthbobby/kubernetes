@@ -1,0 +1,20 @@
+# Static volume
+# The volume which is created by the admins
+# here the admin will create a  server ex:- nfs and will use this servers volume.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv
+spec:
+  capacity: # we need to provide a capacity we need to allocate from the server to this PV.
+    storage: 2Gi
+  accessModes: # what kind of access mode do this PV should have.
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # this tells what should happen to the volume when Pod gets deleted.
+  nfs:
+    server: 172.31.19.109 #provide nfs server ip
+    path: /mnt/nfs_share #provide the nfs server mount path ex:- /mnt/nfs_share
+
+    #(or)
+  hostpath:
+    path: # provide path in your k8 server.

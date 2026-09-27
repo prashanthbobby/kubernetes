@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: prq
+  namespace: pns
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 2Gi
+    limits.cpu: "1"
+    limits.memory: 2Gi
+    pods: 1
+    count/deploymments.apps: 1

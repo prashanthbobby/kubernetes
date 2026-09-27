@@ -1,0 +1,61 @@
+# ============================================================
+# 1. ROLE
+# ============================================================
+# A Role defines WHAT actions are allowed.
+# This Role allows access to Pods inside the "pns" namespace.
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+
+metadata:
+  namespace: pns
+  name: rbac-role
+
+rules:
+- apiGroups: [""]                 # "" = Core API group
+  resources: ["pods"]             # Resource on which permissions are given
+  verbs: ["get", "watch", "list"] # Allowed actions
+
+
+---
+
+# ============================================================
+# 2. ROLE BINDING
+# ============================================================
+# A RoleBinding defines WHO gets the permissions
+# defined in the Role above.
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+
+metadata:
+  namespace: pns
+  name: read-pod-binding
+
+subjects:
+- kind: ServiceAccount
+  name: prashanth
+  namespace: pns
+  apiGroup: rbac.authorization.k8s.io #no need for ServiceAccount, we mention it for users and groups.
+
+roleRef:
+  kind: Role
+  name: rbac-role
+  apiGroup: rbac.authorization.k8s.io
+
+
+---
+# ============================================================
+# 3. SERVICE ACCOUNT
+# ============================================================
+# This creates the ServiceAccount named "prashanth".
+#
+# The RoleBinding above gives this ServiceAccount
+# the permissions defined in "rbac-role".
+
+apiVersion: v1
+kind: ServiceAccount
+
+metadata:
+  name: prashanth
+  namespace: pns

@@ -1,0 +1,24 @@
+# used to maintain no of replicas of the pods. and used for pod lifecycle.
+# if any pod gets terminated in any case it will adjust as per the replicas we mentioned.
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mouprarc
+  namespace: pns
+  #labels: #not mandatory
+   # app: moupra
+spec: #specifications for RC
+  replicas: 2
+  selector: #this will be the label of the pods which used select which pods we need to place under this.
+    app: moupra
+  template: #template of your pod
+    metadata:
+      name: moupra
+      labels:
+        app: moupra
+    spec: #specification of your pod
+      containers:
+      - name: moupra1c
+        image: prashanth1316/moupra:1
+        ports:
+        - containerPort: 80

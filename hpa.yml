@@ -1,0 +1,35 @@
+# Horizontal Pod Autoscaling
+# this is one of th pod scaling type where no of pods gets scaled when there is load on the pod.
+# this will only works when our pods or deploymets has CPU and Memory resources allocated to it 
+
+# Here we use kind HorizontalPodAutoscaling
+# specs of HPA we need which kind of deployment we need uder ScaleTargetRef and provide existing deployment name
+# as we are scaling we need minimum and maximum pods so provide it under HPA spec.
+# and on what basics the pod should scale.
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: phpa
+  namespace: pns
+spec:
+  scaleTargetRef: # which type of deployment we need to scale.
+    apiVersion: apps/v1
+    kind: Deployment
+    name: moupra-deploy # name of the existing deployment
+    namespace: pns
+  minReplicas: 1
+  maxReplicas: 5
+  metrics: # based on these metrics pods gets scaled.
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 50

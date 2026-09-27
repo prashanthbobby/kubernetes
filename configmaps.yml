@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pcm
+  namespace: pns
+data: # the values which we want to refer in our deployments template these are basically like env variables.
+  dbusername: Prashanth
+  dbpassword: Prashanth1234
+  APP_NAME: "moupra"
+  APP_ENV: "dev"
+  USER_NAME: "prashanth"

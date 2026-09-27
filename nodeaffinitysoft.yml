@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: moupra
+  namespace: pns
+  labels:
+    app: moupra
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution: # here it will check for the key=value (node=nodeworker) if this matches it will deploy in it else it will deploy in any other node available.
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: name # here i gave the key as (name) instead of (node) so will check for (name=nodeworker) if this is found ok or else it deploy in any other node available.
+              operator: In
+              values:
+              - nodeworker
+  containers:
+    - name: moupracontainer
+      image: prashanth1316/moupra:1
+      ports:
+      - containerPort: 80
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "64Mi"
+        limits:
+          cpu: "500m"
+          memory: "128Mi"

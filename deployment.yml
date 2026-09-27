@@ -1,0 +1,27 @@
+# a simple deployment file, here we can modify and repply the changes, which we cannot do in RC and RS.
+#  Here we just need a deployment stratagy (Kind = Deployment)
+# we need to select the selector so that the pod will gets created in the deployment.
+# Here the selector and the pod labels should match.
+# we need a pod so give pod template
+# we need a container so give container details
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moupra-deploy
+  namespace: pns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moupra
+  template: # pod template
+    metadata:
+      labels:
+        app: moupra
+    spec:
+      containers:
+      - name: moupra1c
+        image: prashanth1316/moupra:1
+        ports:
+        - containerPort: 80

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: moupra
+  namespace: pns
+  labels:
+    app: moupra
+spec:
+  nodeSelector:
+    node: nodeworker
+  containers:
+    - name: moupracontainer
+      image: prashanth1316/moupra:1
+      ports:
+      - containerPort: 80
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "64Mi"
+        limits:
+          cpu: "500m"
+          memory: "128Mi"

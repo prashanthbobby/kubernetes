@@ -1,0 +1,29 @@
+#cluster-ip
+apiVersion: v1
+kind: Service
+metadata: 
+  name: clusteripsvc
+  namespace: pns
+spec:
+  type: ClusterIP 
+  selector: 
+    app: moupra
+  ports:
+  - port: 80 #service port
+    containerPort: 80 #container port
+
+#NodePort
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: nodeportsvc
+  namespace: pns
+spec:
+  type: NodePort 
+  selector: 
+    app: moupra
+  ports:
+  - port: 80 #service port
+    targetPort: 80 #container port
+    NodePort: # 30000-32767 and this is optional. if we want to place our service under specifc port we need to provide this.

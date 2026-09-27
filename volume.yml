@@ -1,0 +1,56 @@
+# In volumes the flow runs as Pod will listen to the PVC and PVC talks to PV.
+# so when we mount a volume in container first we need a volume to mount. next 
+# PV  = Actual disk (created by admin)
+# PVC = Request for disk (created by user/app)
+# Pod = Uses the disk
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moupra-deploy
+  namespace: pns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moupra
+  template: # pod template
+    metadata:
+      labels:
+        app: moupra
+    spec:
+      containers:
+      - name: moupra1c
+        image: prashanth1316/moupra:1
+        ports:
+        - containerPort: 80
+        volumeMounts: # the volume path which we want to mount for our container. Inside container, storage will appear at this path.
+        - name: mongodbvol 
+          mountPath: /data/db # you can give any path as you wish but by default some have its on path ex:- mongo /data/db, jenkins /var/jenkins_home
+      volumes: # this is the volume of the pod which connects to PVC.
+      - name: mongodbvol
+        persistentVolumeClaim:
+          claimName: nfs-pvc # name of PVC
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+  namespace: pns
+spec:
+  resources: # how much storage we need from the PV.
+    requests:
+      storage: 1Gi
+  accessModes:
+  - ReadOnlyOnce # if you provide anyother access modes this wont work.
+
+
+# sudo mount 172.31.19.109:/mnt/nfs_share /mnt/test-nfs
+
+# now create a service to communicate with the application.
+
+# after creating to test the volumes are working or not.
+# 1) exec into the pod (kubectl exec -it moupra-deploy-677ddc8b7c-nv4s5 -n pns -- /bin/sh)
+# 2) go to the mount path /data/db check if any files exists if no foles exist create a temp file to test (echo "hello persistent volume" > test.txt)
+# 3) it will create a file with name test.txt
+# 4) now connect to nfs server and check if test.txt file exists or not in mount path /mnt/nfs_share.
+

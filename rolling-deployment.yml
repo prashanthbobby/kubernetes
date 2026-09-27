@@ -1,0 +1,29 @@
+# this is for the new deployment stratagy which we used to update our application to newer version.
+# Gradually replaces old pod with new pod
+# Zero downtime (best practice)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moupra-rolling-deploy
+  namespace: pns
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0 # Maximum pods that can be DOWN during update
+      maxSurge: 1 # No of Extra pods allowed temporarily
+  minReadySeconds: 10 # Pod must be READY for at least 10 seconds before it's considered stable
+  selector:
+    matchLabels:
+      app: moupra
+  template: # pod template
+    metadata:
+      labels:
+        app: moupra
+    spec:
+      containers:
+      - name: moupra1c
+        image: prashanth1316/moupra:1
+        ports:
+        - containerPort: 80
